@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Fanatical Auto Fetch + Open Steam
+// @name         Fanatical Auto Fetch + Open Steam (Fixed Loader)
 // @namespace    KoK
 // @author       KoK
-// @version      2
+// @version      2.1
 // @description  Reveal and fetch Steam keys from Fanatical and open registerkey page in Steam
 // @match        https://www.fanatical.com/en/orders/*
 // @grant        none
@@ -14,7 +14,7 @@
     let keysData = [];
 
     function createButton() {
-        if (document.getElementById('fetchKeys')) return; // Prevent duplicate
+        if (document.getElementById('fetchKeys')) return;
         const btn = document.createElement('button');
         btn.textContent = 'Fetch Steam Keys';
         btn.id = 'fetchKeys';
@@ -43,13 +43,11 @@
     function collectKeys() {
         keysData = [];
 
-        // Inputs
         document.querySelectorAll('input[type="text"].form-control').forEach(input => {
             const match = input.value.trim().match(/[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}/g);
             if (match) keysData.push(...match);
         });
 
-        // Spans
         document.querySelectorAll('.redeem-key__key-copy-text, .redeem-key__key-text').forEach(span => {
             const matches = span.textContent.trim().match(/[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}/g);
             if (matches) keysData.push(...matches);
@@ -98,12 +96,27 @@
         });
     }
 
-    const observer = new MutationObserver((mutations, obs) => {
-        const keysSection = document.querySelector('.account-content, .redeem-key__key-text');
-        if (keysSection) {
-            console.log('[Fanatical Debug] DOM ready – initializing script');
+    function waitForContentThenSetup() {
+        const interval = setInterval(() => {
+            const container = document.querySelector('.account-content, .redeem-key__key-text');
+            if (container) {
+                if (!document.getElementById('fetchKeys')) {
+                    console.log('[Fanatical Debug] Content ready – running setup');
+                    setup();
+                }
+                clearInterval(interval);
+            }
+        }, 500);
+    }
+
+    waitForContentThenSetup();
+
+    // Fallback observer for dynamic changes or partial loads
+    const observer = new MutationObserver(() => {
+        const container = document.querySelector('.account-content, .redeem-key__key-text');
+        if (container && !document.getElementById('fetchKeys')) {
+            console.log('[Fanatical Debug] Mutation triggered setup');
             setup();
-            obs.disconnect();
         }
     });
 
