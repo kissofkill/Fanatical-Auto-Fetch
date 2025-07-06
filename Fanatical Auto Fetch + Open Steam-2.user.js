@@ -6,6 +6,8 @@
 // @description  Reveal and fetch Steam keys from Fanatical and open registerkey page in Steam
 // @match        https://www.fanatical.com/en/orders/*
 // @grant        none
+// @downloadURL  https://github.com/kissofkill/Fanatical-Auto-Fetch/raw/refs/heads/main/Fanatical%20Auto%20Fetch%20+%20Open%20Steam-2.user.js
+// @updateURL    https://github.com/kissofkill/Fanatical-Auto-Fetch/raw/refs/heads/main/Fanatical%20Auto%20Fetch%20+%20Open%20Steam-2.user.js
 // ==/UserScript==
 
 (function () {
